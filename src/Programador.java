@@ -20,6 +20,8 @@ public class Programador extends Thread{
     //Contador de tempo da tarefa atual
     //Quando contador = storypoints da tarefa, finaliza a tarefa e reseta
     int tempoTrabalhado = 0;
+    //Armazena indexação da tarefa atual
+    int tarefaAtualIndex = -1;
     //Flag para continuar
     boolean continua = true;
 
@@ -35,30 +37,35 @@ public class Programador extends Thread{
         if(continua){
             //Se possui tarefas inacabadas
             if (tarefasList.size() > 0) {
-                //Seleciona a ultima tarefa da lista (last in first out)
-                Tarefa tarefaAtual = tarefasList.get(tarefasList.size() - 1);
                 //Se não está programando
                 if (!programando) {
+                    //Guarda indexação da tarefa atual
+                    tarefaAtualIndex = tarefasList.size() - 1;
+                    while(tarefasList.get(tarefaAtualIndex) == null && tarefaAtualIndex != 0){
+                        tarefaAtualIndex--;
+                    }
                     //Começa a trabalhar na tarefaAtual, para de jogar
                     //Seta tarefaAtual como sendo feita e fora da espera
                     //Reseta tempo trabalhado
                     System.out.println("[Há tarefas! O programador começa a trabalhar na tarefa "
-                            + tarefaAtual.getNome() + ".]");
+                            + tarefasList.get(tarefaAtualIndex).getNome() + ".]");
                     jogando = false;
                     programando = true;
-                    tarefasList.get(tarefasList.size() - 1).setEsperando(false);
-                    tarefasList.get(tarefasList.size() - 1).setSendoFeita(true);
+                    tarefasList.get(tarefaAtualIndex).setEsperando(false);
+                    tarefasList.get(tarefaAtualIndex).setSendoFeita(true);
                     tempoTrabalhado = 0;
-                }//Se estiver programando, mas tempotrabalhado = storypoints (tempo para acabar) da tarefa
-                else if (tarefaAtual.getStoryPoints() == tempoTrabalhado) {
+                }//Se estiver programando, mas tempotrabalhado = storypoints da tarefa
+                else if (tarefaAtualIndex >= 0 &&
+                        tarefasList.get(tarefaAtualIndex).getStoryPoints() <= tempoTrabalhado) {
                     //Programador terminou a tarefa, restaura storypoints usados
                     //Seta tarefa como feita e a remove da lista de inacabadas
                     //Adiciona tarefa feita e altera estado do jogador
-                    storypoints += tarefaAtual.getStoryPoints();
-                    tarefasList.get(tarefasList.size() - 1).setFeita(true);
-                    tarefasList.remove(tarefasList.size() - 1);
+                    storypoints += tarefasList.get(tarefaAtualIndex).getStoryPoints();
+                    tarefasList.get(tarefaAtualIndex).setFeita(true);
+                    tarefasList.remove(tarefaAtualIndex);
                     tarefasFeitas++;
                     programando = false;
+                    tarefaAtualIndex = -1;
                 }
                 tempoTrabalhado++;
             }//Se não há tarefas inacabadas

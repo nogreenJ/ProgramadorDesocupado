@@ -43,11 +43,7 @@ public class Tarefa extends Thread{
         sendoFeita = false;
         esperando = false;
         continua = false;
-        if(feita){
-            System.out.println("[Tarefa " + nome + " concluída!]");
-        } else {
-            System.out.println("[Tarefa " + nome + " dada a outro programador!]");
-        }
+        System.out.println("[Tarefa " + nome + " concluída!]");
     }
 
     public String getNome() {
